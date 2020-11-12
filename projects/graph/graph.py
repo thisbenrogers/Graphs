@@ -109,9 +109,41 @@ class Graph:
         """
         Return a list containing the shortest path from
         starting_vertex to destination_vertex in
-        breath-first order.
+        breadth-first order.
         """
-        pass  # TODO
+        # initializes set for tracking visited nodes and a list for simplified queue
+        visited = set()
+        q = [[starting_vertex]]
+
+        # base case
+        if starting_vertex == destination_vertex:
+            print("Same node")
+            return None
+        
+        # traverses the graph
+        while q:
+            path = q.pop(0)
+            node = path[-1]
+            
+            # if we haven't been here yet,
+            if node not in visited:
+                neighbors = self.get_neighbors(node)
+
+                # check out all the neighbors
+                for neighbor in neighbors:
+                    new_path = list(path)
+                    new_path.append(neighbor)
+                    q.append(new_path)
+
+                    # check to see if the neighbor is the destination vertex
+                    if neighbor == destination_vertex:
+                        print("Shortest path = ", *new_path) 
+                        return
+                
+                # track that we've visited this node
+                visited.add(node)
+
+        return None
 
     def dfs(self, starting_vertex, destination_vertex):
         """
