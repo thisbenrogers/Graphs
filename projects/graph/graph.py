@@ -137,8 +137,7 @@ class Graph:
 
                     # check to see if the neighbor is the destination vertex
                     if neighbor == destination_vertex:
-                        print("Shortest path = ", *new_path) 
-                        return
+                        return new_path
                 
                 # track that we've visited this node
                 visited.add(node)
