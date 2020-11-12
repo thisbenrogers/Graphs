@@ -97,7 +97,13 @@ class Graph:
 
         This should be done using recursion.
         """
-        pass  # TODO
+        if visited is None:
+            visited = set()
+        visited.add(starting_vertex)
+        print(f"dft_r: {starting_vertex}")
+        for next in self.vertices[starting_vertex] - visited:
+            self.dft_recursive(next, visited)
+        return visited
 
     def bfs(self, starting_vertex, destination_vertex):
         """
