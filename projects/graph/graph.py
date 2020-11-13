@@ -8,6 +8,7 @@ class Graph:
     """Represent a graph as a dictionary of vertices mapping labels to edges."""
     def __init__(self):
         self.vertices = {}
+        self.visited = set()
 
     def add_vertex(self, vertex_id):
         """
@@ -192,6 +193,18 @@ class Graph:
 
             v.color = black
         """
+        if starting_vertex == destination_vertex:
+            return [starting_vertex]
+
+        neighbors = self.get_neighbors(starting_vertex)
+        for neighbor in neighbors:
+            if neighbor not in self.visited:
+                self.visited.add(neighbor)
+                path = self.dfs_recursive(neighbor, destination_vertex)
+                if path:
+                    path.insert(0, starting_vertex)
+                    return path
+        return None
         
 
 
