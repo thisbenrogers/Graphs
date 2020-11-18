@@ -40,17 +40,17 @@ class SocialGraph:
         visited = set()
         q = [[starting_vertex]]
         if starting_vertex == destination_vertex:
-            return q
+            return q[0]
         while q:
             path = q.pop(0)
             node = path[-1]
             if node not in visited:
-                neighbors = self.get_neighbors(node)
-                for neighbor in neighbors:
+                friends = self.get_friends(node)
+                for friend in friends:
                     new_path = list(path)
-                    new_path.append(neighbor)
+                    new_path.append(friend)
                     q.append(new_path)
-                    if neighbor == destination_vertex:
+                    if friend == destination_vertex:
                         return new_path
                 visited.add(node)
         return None
@@ -104,9 +104,28 @@ class SocialGraph:
 
         The key is the friend's ID and the value is the path.
         """
-        visited = {}  # Note that this is a dictionary, not a set
-        # !!!! IMPLEMENT ME
-        return visited
+        paths = {}  # Note that this is a dictionary, not a set
+
+        paths[user_id] = []
+        
+        # initialize a 'friends' list
+        friends = list(self.get_friends(user_id))
+
+        # put all the connected users in self.users
+        while len(friends) > 0:
+            for friend in friends:
+                new_friends = []
+                curr_friend = friends.pop(0)
+                if curr_friend not in paths.keys():
+                    paths[curr_friend] = []
+                    new_friends = self.get_friends(curr_friend)
+            friends.extend(new_friends)
+
+        # iterate over paths, and add the return from bfs as the value
+        for user in paths.keys():
+            paths[user] = self.bfs(user_id, user)
+
+        return paths
 
 
 if __name__ == '__main__':
