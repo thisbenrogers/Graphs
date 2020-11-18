@@ -30,6 +30,31 @@ class SocialGraph:
         self.users[self.last_id] = User(name)
         self.friendships[self.last_id] = set()
 
+    def get_friends(self, vertex_id):
+        """
+        Get all friends (edges) of a vertex.
+        """
+        return self.friendships[vertex_id]
+
+    def bfs(self, starting_vertex, destination_vertex):
+        visited = set()
+        q = [[starting_vertex]]
+        if starting_vertex == destination_vertex:
+            return q
+        while q:
+            path = q.pop(0)
+            node = path[-1]
+            if node not in visited:
+                neighbors = self.get_neighbors(node)
+                for neighbor in neighbors:
+                    new_path = list(path)
+                    new_path.append(neighbor)
+                    q.append(new_path)
+                    if neighbor == destination_vertex:
+                        return new_path
+                visited.add(node)
+        return None
+
     def fisher_yates_shuffle(self, l):
         for i in range(0, len(l)):
             random_index = random.randint(i, len(l) - 1)
