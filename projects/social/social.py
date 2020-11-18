@@ -113,8 +113,8 @@ class SocialGraph:
 
         # put all the connected users in self.users
         while len(friends) > 0:
+            new_friends = []
             for friend in friends:
-                new_friends = []
                 curr_friend = friends.pop(0)
                 if curr_friend not in paths.keys():
                     paths[curr_friend] = []
