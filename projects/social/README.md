@@ -52,7 +52,7 @@ Note that in this sample, Users 3, 4 and 9 are not in User 1's extended social n
 
 2. If you create 1000 users with an average of 5 random friends each, what percentage of other users will be in a particular user's extended social network? What is the average degree of separation between a user and those in his/her extended network?
 
- - Just less than 60% (58.1% averaged over several self-tests) of other users will be in a particular users extended social network. The average degree of separation is roughly 5.
+ - About 99% of other users will be in a particular users extended social network. The average degree of separation is roughly 5.
 
 
 

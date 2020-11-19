@@ -7,7 +7,6 @@ class User:
 class SocialGraph:
     def __init__(self):
         self.last_id = 0
-        self.friendship_count = 0
         self.users = {}
         self.friendships = {}
 
@@ -17,11 +16,14 @@ class SocialGraph:
         """
         if user_id == friend_id:
             print("WARNING: You cannot be friends with yourself")
+            return False
         elif friend_id in self.friendships[user_id] or user_id in self.friendships[friend_id]:
             print("WARNING: Friendship already exists")
+            return False
         else:
             self.friendships[user_id].add(friend_id)
             self.friendships[friend_id].add(user_id)
+            return True
 
     def add_user(self, name):
         """
@@ -62,39 +64,26 @@ class SocialGraph:
             l[random_index], l[i] = l[i], l[random_index]
 
     def populate_graph(self, num_users, avg_friendships):
-        """
-        Takes a number of users and an average number of friendships
-        as arguments
-
-        Creates that number of users and a randomly distributed friendships
-        between those users.
-
-        The number of users must be greater than the average number of friendships.
-        """
-        # Reset graph
         self.last_id = 0
         self.users = {}
         self.friendships = {}
 
-        # Add users
         for user in range(num_users):
             self.add_user(user)
 
-        # Create friendships
-        friendship_combos = []
         total_friendships = avg_friendships * num_users
+        friendships_made = 0
 
-        # TODO find a way to miss this nested for loop. 
-        # TODO "You can avoid this by only creating friendships where user1 < user2"
-        for user_id in range(1, num_users + 1):
-            for friend_id in range(user_id + 1, num_users + 1):
-                friendship_combos.append((user_id, friend_id))
+        while friendships_made < total_friendships:
+            first_user = random.randint(1, num_users)
+            second_user = random.randint(1, num_users)
 
-        self.fisher_yates_shuffle(friendship_combos)
+            new_friendship = self.add_friendship(first_user, second_user)
 
-        friendships_to_make = friendship_combos[:(total_friendships // 2)]
-        for friendship in friendships_to_make:
-            self.add_friendship(friendship[0], friendship[1])
+            if new_friendship:
+                friendships_made += 2
+
+
 
     def get_all_social_paths(self, user_id):
         """
