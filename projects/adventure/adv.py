@@ -1,6 +1,7 @@
 from room import Room
 from player import Player
 from world import World
+from utils import Queue, Stack
 
 import random
 from ast import literal_eval
@@ -46,8 +47,55 @@ traversal_path = []
 # TODO          walk back to the nearest room that does contain an unexplored path
 # TODO      - Use Breadth-First search to find the nearest room with a '?' for an exit
 
+class Graph():
+    def __init__(self):
+        self.rooms = {}
+        self.visited_rooms = set()
+        self.path = []
 
+    def add_room(self, room_id):
+        self.rooms[room_id] = {'n': '?', 's': '?', 'w': '?', 'e': '?'}
+        return None
 
+    def add_exit(self, rm1, direction, rm2):
+        self.rooms[rm1][direction] = rm2
+        return None
+
+    def show_exits(self, room):
+        return self.rooms[room]
+
+    def find_nearest_unexplored(self, room):
+        # * bfs
+        # *     returns shortest path to next unexplored exit
+        # *     return a list with n,s,w,e cardinal directions
+        # *     INCLUDES the unexplored direction as the last step in path
+        self.visited_rooms.clear()
+        path = []
+        q = Queue()
+        q.enqueue(room)
+        while q.size() > 0:
+            room = q.dequeue()
+            if room not in self.visited_rooms:
+                exits = self.show_exits(room)
+                for exit_direction, exit_room in exits.items():
+                    path.append(exit_direction)
+                    q.enqueue(exit_room)
+                    if exit_direction == '?':
+                        return path
+                self.visited.add(room)
+        return None
+
+curr_room = player.current_room.id
+print(f"player.current_room.id {curr_room}")
+print(f"player.current_room.get_exits() {player.current_room.get_exits()}")
+print(f"player.travel('n') {player.travel('n')}")
+curr_room = player.current_room.id
+print(f"player.current_room.id {curr_room}")
+print(f"player.current_room.get_exits() {player.current_room.get_exits()}")
+print(f"player.travel('n') {player.travel('n')}")
+curr_room = player.current_room.id
+print(f"player.current_room.id {curr_room}")
+print(f"player.current_room.get_exits() {player.current_room.get_exits()}")
 
 # ! -------------End-Ben-Rogers-Code--------------------------------
 # TRAVERSAL TEST
