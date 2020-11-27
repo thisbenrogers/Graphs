@@ -75,7 +75,6 @@ class Traversal_Graph():
             'e': 'w',
             'w': 'e'
         }
-        print(f"opposite: {opposite[cardinal_direction]}")
         return opposite[cardinal_direction]
 
     def add_exit(self, rm1, direction, rm2):
@@ -88,32 +87,58 @@ class Traversal_Graph():
     def show_exits(self, room):
         return self.rooms[room]
 
-    def find_nearest_unexplored(self, room):
-        # * bfs
-        # *     returns shortest path to next unexplored exit
-        # *     return a list with n,s,w,e cardinal directions
-        # *     INCLUDES the unexplored direction as the last step in path
+    def retrace_steps(self, return_dict, travel_list):
+        # *     moves the player through the travel_list (compiled in find_nearest_unexplored)
+        # *     then returns the dictionary with the nearest unexplored direction and room_id
+
+        for direction in travel_list:
+            traversal_path.append(direction)
+            player.travel(direction)
+
+        return return_dict
+        pass
+
+    def find_nearest_unexplored(self, room_id):
+        
+        # ! bfs
+
+        # TODO     returns dict with only ONE entry: {
+        # TODO       key:   current room id
+        # TODO       value: cardinal direction of unexplored exit LEADING FROM current room
+        # TODO       }
+        # TODO          <(this is backwards on purpose)>
+
+        # TODO     checks to see if ending room is in self.visited
+        # TODO          if not, add to self.visited and add room to MY graph
         nearest_visited = []
         path = []
         q = Queue()
-        q.enqueue(room)
+        q.enqueue(room_id)
         while q.size() > 0:
             room = q.dequeue()
             if room not in nearest_visited:
+                print(f'room in find_nearest_unexplored: {room}')
                 exits = self.show_exits(room)
+                print(f"exits in find_nearest_unexplored: {exits}")
                 for exit_direction, exit_room in exits.items():
+                    print(f"exit_direction: {exit_direction}")
+                    print(f"exit_room: {exit_room}")
+                    # ! we need to move the player AFTER this while loop is done
+                    # ! create another queue
+                    if exit_room == '?':
+                        next_step = self.retrace_steps({room: exit_direction}, path)
+                        return next_step
                     path.append(exit_direction)
                     q.enqueue(exit_room)
-                    if exit_direction == '?':
-                        return path
                 nearest_visited.append(room)
+            print(f'q: {q.queue}')
         return None
 
     def get_rand_unexplored_dir(self, dir_arr, room_id):
 
         # *     returns a string with one cardinal direction chosen from the passed-in array
         # *     returns None if dead-end
-        
+
         rand_arr = []
 
         for card, value in self.rooms[room_id].items():
@@ -134,7 +159,6 @@ class Traversal_Graph():
         while room_stack.size() > 0:
             curr_room = room_stack.pop()
             if curr_room not in self.visited:
-                # * perform operations here
 
                 # Adds to self.visited
                 self.visited.add(curr_room)
@@ -149,27 +173,22 @@ class Traversal_Graph():
                 # adds cardinal exit directions to MY graph (with a '?' value)
                 for ex in exits:
                     self.add_anonymous_exit(curr_room, ex)
-
-               
-                # checks for dead-end,
-                # retraces steps to nearest unexplored exit in case of dead-end
-               
-                # retrace = Queue()
-                # if len(exits) == 1:
-                #     retraced_steps = self.find_nearest_unexplored(curr_room)
-                #     while len(retraced_steps) > 0:
-                #         step = retrace.dequeue()
-                #         traversal_path.append(step)
-                #         player.travel(step)
-                #         # self.visited
-                #         # self.add_room
-                #         # curr_room = player
-
-                # ! Need to log current room after above dead-end check
                 
                 # chooses a random dir
                 rand_dir = self.get_rand_unexplored_dir(exits, curr_room)
-                print(f"rand_dir: {rand_dir}")
+
+                # checks for dead-end
+                if rand_dir is None:
+                    print(f'1st room id in dead-end check: {player.current_room.id}')
+                    new_location = self.find_nearest_unexplored(curr_room)
+                    print(f'2nd room id in dead-end check: {player.current_room.id}')
+                    print(f'new_location keys: {new_location.keys()}')
+                    print(f'new_location values: {new_location.values()}')
+                    if new_location is None:
+                        return None
+                    for key, value in new_location.items():
+                        curr_room = key
+                        rand_dir = value
 
                 # travel in that direction
                 player.travel(rand_dir)
