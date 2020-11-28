@@ -47,6 +47,9 @@ class Traversal_Graph():
 
     def move_player(self, cardinal_direction):
         # *     keeps player.current_room.id and traversal_path in lockstep with each other
+        # *     this is the only method that:
+        # *         moves the player
+        # *         updates the traversal_path
         player.travel(cardinal_direction)
         traversal_path.append(cardinal_direction)
         return None
@@ -148,7 +151,7 @@ class Traversal_Graph():
 
 
     def dft(self):
-        # *     moves player in depth-first traversal of maze
+        # *     depth-first traversal of maze
         # *     returns None when a dead-end is reached
         s = Stack()
         s.push(player.current_room.id)
