@@ -12,10 +12,10 @@ world = World()
 
 # You may uncomment the smaller graphs for development and testing purposes.
 # map_file = "maps/test_line.txt"
-map_file = "maps/test_cross.txt"
+# map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
-# map_file = "maps/main_maze.txt"
+map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
 room_graph=literal_eval(open(map_file, "r").read())
@@ -168,10 +168,8 @@ class Traversal_Graph():
         # *         return None from this method, we are finished
         exploring = self.dft()
         if exploring is None:
-            print('we hit a dead end, retracing steps')
             unexplored = self.find_nearest_unexplored()
             if unexplored is None:
-                print('done')
                 return None
             self.traverse()
 
