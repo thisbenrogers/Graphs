@@ -42,6 +42,7 @@ class Traversal_Graph():
         return None
 
     def show_exits(self, room_id):
+        # * returns dictionary
         return self.rooms[room_id]
 
     def move_player(self, cardinal_direction):
@@ -80,7 +81,7 @@ class Traversal_Graph():
         return None
 
     def get_rand_unexplored_dir(self):
-        # *     returns a string with one cardinal direction from CURRENT ROOM
+        # *     returns a string with one cardinal direction from players CURRENT ROOM
         # *     returns None if dead-end
         rand_arr = []
         room_id = player.current_room.id
@@ -91,14 +92,52 @@ class Traversal_Graph():
             return None
         return random.choice(rand_arr)
 
-    def find_nearest_unexplored(self):
-        # *     moves player (retracing steps) until in a room with unexplored exit
-        # *     uses bfs to find nearest unexplored exit
-        # *     returns {room_id: {'direction': '?'}} once unexplored direction is found, or
-        # *     returns None if there are no unexplored directions left
-        # ! because this method searches for something that might not be there,
-        # ! the traversal_path ( self.move_player(direction) ) can't be updated until we find a '?'
+    def retrace(self, path_list):
+        # * moves player along path to nearest unexplored exit
+        for entry in path_list:
+            direction, rm = entry
+            self.move_player(direction)
         return None
+
+    def find_nearest_unexplored(self):
+        # *     uses bfs to find path to nearest unexplored exit
+        # *     once path is found, calls self.retrace() to move player there.
+        # *         returns True once unexplored direction is found, or
+        # *     returns None if there are no unexplored directions left
+        # *
+        # * each entry in the Queue holds lists of tuples (direction_to_travel, origin_room)
+
+        q = Queue()
+        visited = set()
+        q.enqueue([(random.choice(player.current_room.get_exits()), player.current_room.id)])
+
+        while q.size() > 0:
+            curr_path = q.dequeue()
+            curr_node = curr_path[-1]
+            curr_dir, curr_room = curr_node 
+
+            # # ? check for target here ?
+            if curr_room == '?':
+                # removes the last direction (so self.dft() can manage selecting a new unexplored direction)
+                curr_path.pop()
+                # removes the first direction (our path TO the starting Node, enqueue'd above)
+                curr_path.pop(0)
+                # sends a proper list of tuples for self.retrace() to unpack
+                self.retrace(curr_path)
+                return True
+            
+            if curr_node not in visited:
+                visited.add(curr_node)
+
+                # get the exits
+                exits = self.show_exits(curr_room)
+
+                # iterate over exits, enqueue the PATH to them
+                for key, value in exits.items():
+                    path_copy = curr_path + [(key, value)]
+                    q.enqueue(path_copy)
+        return None
+
 
     def dft(self):
         # *     moves player in depth-first traversal of maze
@@ -112,13 +151,13 @@ class Traversal_Graph():
                 if curr_room not in self.rooms:
                     self.add_room(curr_room)
                 self.add_unexplored_exits()
-                rand_dir = self.get_rand_unexplored_dir()
-                if rand_dir is None:
-                    return None
-                self.move_player(rand_dir)
-                new_room = player.current_room.id
-                self.update_exit(curr_room, rand_dir, new_room)
-                s.push(new_room)
+            rand_dir = self.get_rand_unexplored_dir()
+            if rand_dir is None:
+                return None
+            self.move_player(rand_dir)
+            new_room = player.current_room.id
+            self.update_exit(curr_room, rand_dir, new_room)
+            s.push(new_room)
 
         return None
 
